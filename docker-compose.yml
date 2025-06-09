@@ -1,0 +1,41 @@
+services:
+  db:
+    image: mysql:8.1
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: senha_da_nasa
+      MYSQL_USER: bira
+      MYSQL_PASSWORD: senha_do_bira
+      MYSQL_DATABASE: ativbira
+    volumes:
+      - db:/var/lib/mysql
+      - ./tabela_contato.sql:/docker-entrypoint-initdb.d/init.sql 
+    networks:
+      - private
+  
+  app:
+    build: ./CRUD
+    restart: always
+    ports: 
+      - 80:80
+    networks:
+      - private
+
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: db
+      PMA_USER: bira
+      PMA_PASSWORD: senha_do_bira
+    ports:
+      - 8001:80
+    networks:
+      - private
+networks:
+  private:
+    driver: bridge
+
+volumes:
+  db:
+    driver: local
